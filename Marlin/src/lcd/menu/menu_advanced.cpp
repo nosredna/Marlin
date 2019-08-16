@@ -1,9 +1,9 @@
 /**
  * Marlin 3D Printer Firmware
- * Copyright (C) 2019 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+ * Copyright (c) 2019 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
  * Based on Sprinter and grbl.
- * Copyright (C) 2011 Camiel Gubbels / Erik van der Zalm
+ * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,6 +41,11 @@
 
 #if ENABLED(PIDTEMP)
   #include "../../module/temperature.h"
+#endif
+
+#ifdef FILAMENT_RUNOUT_DISTANCE_MM
+  #include "../../feature/runout.h"
+  float lcd_runout_distance_mm;
 #endif
 
 void menu_tmc();
@@ -96,7 +101,7 @@ void menu_backlash();
   // Set the home offset based on the current_position
   //
   void _lcd_set_home_offsets() {
-    enqueue_and_echo_commands_P(PSTR("M428"));
+    queue.inject_P(PSTR("M428"));
     ui.return_to_status();
   }
 #endif
@@ -214,6 +219,12 @@ void menu_backlash();
       #endif // EXTRUDERS > 1
     #endif
 
+    #ifdef FILAMENT_RUNOUT_DISTANCE_MM
+      MENU_ITEM_EDIT_CALLBACK(float3, MSG_RUNOUT_DISTANCE_MM, &lcd_runout_distance_mm, 1, 30, []{
+        runout.set_runout_distance(lcd_runout_distance_mm);
+      });
+    #endif
+
     END_MENU();
   }
 
@@ -244,7 +255,7 @@ void menu_backlash();
         autotune_temp[e]
       #endif
     );
-    lcd_enqueue_command(cmd);
+    lcd_enqueue_one_now(cmd);
   }
 
 #endif // PID_AUTOTUNE_MENU
@@ -543,7 +554,7 @@ void menu_backlash();
       #else
         MENU_MULTIPLIER_ITEM_EDIT(float52sign, MSG_VC_JERK, &planner.max_jerk[C_AXIS], 0.1f, 990);
       #endif
-      #if DISABLED(JUNCTION_DEVIATION) || DISABLED(LIN_ADVANCE)
+      #if !BOTH(JUNCTION_DEVIATION, LIN_ADVANCE)
         EDIT_JERK(E);
       #endif
     #endif
@@ -592,7 +603,12 @@ void menu_backlash();
     static void lcd_init_eeprom_confirm() {
       do_select_screen(
         PSTR(MSG_BUTTON_INIT), PSTR(MSG_BUTTON_CANCEL),
-        []{ ui.completion_feedback(settings.init_eeprom()); },
+        []{
+          const bool inited = settings.init_eeprom();
+          #if HAS_BUZZER
+            ui.completion_feedback(inited);
+          #endif
+        },
         ui.goto_previous_screen,
         PSTR(MSG_INIT_EEPROM), nullptr, PSTR("?")
       );
@@ -603,6 +619,9 @@ void menu_backlash();
 #endif // !SLIM_LCD_MENUS
 
 void menu_advanced_settings() {
+  #ifdef FILAMENT_RUNOUT_DISTANCE_MM
+    lcd_runout_distance_mm = runout.runout_distance();
+  #endif
   START_MENU();
   MENU_BACK(MSG_CONFIGURATION);
 
@@ -674,18 +693,21 @@ void menu_advanced_settings() {
   #endif
 
   // M540 S - Abort on endstop hit when SD printing
-  #if ENABLED(ABORT_ON_ENDSTOP_HIT_FEATURE_ENABLED)
+  #if ENABLED(SD_ABORT_ON_ENDSTOP_HIT)
     MENU_ITEM_EDIT(bool, MSG_ENDSTOP_ABORT, &planner.abort_on_endstop_hit);
   #endif
 
   #if ENABLED(SD_FIRMWARE_UPDATE)
     bool sd_update_state = settings.sd_update_status();
-    MENU_ITEM_EDIT_CALLBACK(bool, MSG_SD_UPDATE, &sd_update_state, []{
+    MENU_ITEM_EDIT_CALLBACK(bool, MSG_MEDIA_UPDATE, &sd_update_state, []{
       //
       // Toggle the SD Firmware Update state in EEPROM
       //
-      const bool new_state = !settings.sd_update_status();
-      ui.completion_feedback(settings.set_sd_update_status(new_state));
+      const bool new_state = !settings.sd_update_status(),
+                 didset = settings.set_sd_update_status(new_state);
+      #if HAS_BUZZER
+        ui.completion_feedback(didset);
+      #endif
       ui.return_to_status();
       if (new_state) LCD_MESSAGEPGM(MSG_RESET_PRINTER); else ui.reset_status();
     });

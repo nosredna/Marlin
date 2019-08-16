@@ -1,9 +1,9 @@
 /**
  * Marlin 3D Printer Firmware
- * Copyright (C) 2019 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+ * Copyright (c) 2019 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
  * Based on Sprinter and grbl.
- * Copyright (C) 2011 Camiel Gubbels / Erik van der Zalm
+ * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,11 +35,7 @@
 #include "../../module/stepper.h"
 #include "../../sd/cardreader.h"
 
-#if ENABLED(POWER_LOSS_RECOVERY)
-  #include "../../feature/power_loss_recovery.h"
-#endif
-
-#if HAS_GAMES
+#if HAS_GAMES && DISABLED(LCD_INFO_MENU)
   #include "game/game.h"
 #endif
 
@@ -60,17 +56,34 @@ void menu_tune();
 void menu_motion();
 void menu_temperature();
 void menu_configuration();
-void menu_user();
-void menu_temp_e0_filament_change();
-void menu_change_filament();
-void menu_info();
-void menu_led();
+
+#if ENABLED(CUSTOM_USER_MENUS)
+  void menu_user();
+#endif
+
+#if ENABLED(ADVANCED_PAUSE_FEATURE)
+  void menu_temp_e0_filament_change();
+  void menu_change_filament();
+#endif
+
+#if ENABLED(LCD_INFO_MENU)
+  void menu_info();
+#endif
+
+#if ENABLED(LED_CONTROL_MENU)
+  void menu_led();
+#endif
+
+#if HAS_CUTTER
+  #include "../../feature/spindle_laser.h"
+  void menu_spindle_laser();
+#endif
 
 #if ENABLED(MIXING_EXTRUDER)
   void menu_mixer();
 #endif
 
-#if HAS_SERVICE_INTERVALS && ENABLED(PRINTCOUNTER)
+#if HAS_SERVICE_INTERVALS
   #if SERVICE_INTERVAL_1 > 0
     void menu_service1();
   #endif
@@ -80,16 +93,6 @@ void menu_led();
   #if SERVICE_INTERVAL_3 > 0
     void menu_service3();
   #endif
-#endif
-
-#if HAS_GAME_MENU
-  void menu_game();
-#elif ENABLED(MARLIN_BRICKOUT)
-  void lcd_goto_brickout();
-#elif ENABLED(MARLIN_INVADERS)
-  void lcd_goto_invaders();
-#elif ENABLED(MARLIN_SNAKE)
-  void lcd_goto_snake();
 #endif
 
 void menu_main() {
@@ -123,22 +126,22 @@ void menu_main() {
 
       if (card_detected) {
         if (!card_open) {
-          MENU_ITEM(submenu, MSG_CARD_MENU, menu_sdcard);
+          MENU_ITEM(submenu, MSG_MEDIA_MENU, menu_media);
           MENU_ITEM(gcode,
             #if PIN_EXISTS(SD_DETECT)
-              MSG_CHANGE_SDCARD, PSTR("M21")
+              MSG_CHANGE_MEDIA, PSTR("M21")
             #else
-              MSG_RELEASE_SDCARD, PSTR("M22")
+              MSG_RELEASE_MEDIA, PSTR("M22")
             #endif
           );
         }
       }
       else {
         #if PIN_EXISTS(SD_DETECT)
-          MENU_ITEM(function, MSG_NO_CARD, nullptr);
+          MENU_ITEM(function, MSG_NO_MEDIA, nullptr);
         #else
-          MENU_ITEM(gcode, MSG_INIT_SDCARD, PSTR("M21"));
-          MENU_ITEM(function, MSG_SD_RELEASED, nullptr);
+          MENU_ITEM(gcode, MSG_INIT_MEDIA, PSTR("M21"));
+          MENU_ITEM(function, MSG_MEDIA_RELEASED, nullptr);
         #endif
       }
     #endif // !HAS_ENCODER_WHEEL && SDSUPPORT
@@ -154,6 +157,10 @@ void menu_main() {
 
     MENU_ITEM(submenu, MSG_MOTION, menu_motion);
   }
+
+  #if HAS_CUTTER
+    MENU_ITEM(submenu, MSG_CUTTER(MENU), menu_spindle_laser);
+  #endif
 
   MENU_ITEM(submenu, MSG_TEMPERATURE, menu_temperature);
 
@@ -212,25 +219,25 @@ void menu_main() {
       if (!card_open) {
         MENU_ITEM(gcode,
           #if PIN_EXISTS(SD_DETECT)
-            MSG_CHANGE_SDCARD, PSTR("M21")
+            MSG_CHANGE_MEDIA, PSTR("M21")
           #else
-            MSG_RELEASE_SDCARD, PSTR("M22")
+            MSG_RELEASE_MEDIA, PSTR("M22")
           #endif
         );
-        MENU_ITEM(submenu, MSG_CARD_MENU, menu_sdcard);
+        MENU_ITEM(submenu, MSG_MEDIA_MENU, menu_media);
       }
     }
     else {
       #if PIN_EXISTS(SD_DETECT)
-        MENU_ITEM(function, MSG_NO_CARD, nullptr);
+        MENU_ITEM(function, MSG_NO_MEDIA, nullptr);
       #else
-        MENU_ITEM(gcode, MSG_INIT_SDCARD, PSTR("M21"));
-        MENU_ITEM(function, MSG_SD_RELEASED, nullptr);
+        MENU_ITEM(gcode, MSG_INIT_MEDIA, PSTR("M21"));
+        MENU_ITEM(function, MSG_MEDIA_RELEASED, nullptr);
       #endif
     }
   #endif // HAS_ENCODER_WHEEL && SDSUPPORT
 
-  #if HAS_SERVICE_INTERVALS && ENABLED(PRINTCOUNTER)
+  #if HAS_SERVICE_INTERVALS
     #if SERVICE_INTERVAL_1 > 0
       MENU_ITEM(submenu, SERVICE_NAME_1, menu_service1);
     #endif
@@ -242,8 +249,12 @@ void menu_main() {
     #endif
   #endif
 
-  #if ANY(MARLIN_BRICKOUT, MARLIN_INVADERS, MARLIN_SNAKE, MARLIN_MAZE)
-    MENU_ITEM(submenu, "Game", (
+  #if HAS_GAMES && DISABLED(LCD_INFO_MENU)
+    #if ENABLED(GAMES_EASTER_EGG)
+      MENU_ITEM_DUMMY();
+      MENU_ITEM_DUMMY();
+    #endif
+    MENU_ITEM(submenu, MSG_GAMES, (
       #if HAS_GAME_MENU
         menu_game
       #elif ENABLED(MARLIN_BRICKOUT)
