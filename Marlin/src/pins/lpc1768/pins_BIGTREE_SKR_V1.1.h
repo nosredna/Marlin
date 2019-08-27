@@ -85,6 +85,13 @@
 //
 #define SERVO0_PIN         P1_24
 
+//
+// MAX6675
+//
+// #define MAX6675_SS_PIN     P1_26
+// #define MAX6675_SCK_PIN    P1_31
+// #define MAX6675_DO_PIN     P1_23
+
 /**
  * LCD / Controller
  *
@@ -104,8 +111,8 @@
   #define BTN_EN2          P3_25
   #define BTN_ENC          P2_11
 
-  #define SD_DETECT_PIN    P1_31
-  #define LCD_SDSS         P1_23
+  // #define SD_DETECT_PIN    P1_31   // use onboard sd card detect instead
+  // #define LCD_SDSS         P1_23   // EXT2 unused pin
   #define LCD_PINS_RS      P0_16
   #define LCD_PINS_ENABLE  P0_18
   #define LCD_PINS_D4      P0_15
