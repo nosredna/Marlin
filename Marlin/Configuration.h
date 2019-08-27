@@ -857,7 +857,7 @@
  * Z Servo Probe, such as an endstop switch on a rotating arm.
  */
 #define Z_PROBE_SERVO_NR 0       // Defaults to SERVO 0 connector.
-#define Z_SERVO_ANGLES { 80, 25 } // Z Servo Deploy and Stow angles
+#define Z_SERVO_ANGLES { 80, 30 } // Z Servo Deploy and Stow angles
 
 /**
  * The BLTouch probe uses a Hall effect sensor and emulates a servo.
@@ -918,9 +918,9 @@
  *     O-- FRONT --+
  *   (0,0)
  */
-#define X_PROBE_OFFSET_FROM_EXTRUDER -48  // X offset: -left  +right  [of the nozzle]
-#define Y_PROBE_OFFSET_FROM_EXTRUDER -11  // Y offset: -front +behind [the nozzle]
-#define Z_PROBE_OFFSET_FROM_EXTRUDER 0   // Z offset: -below +above  [the nozzle]
+#define X_PROBE_OFFSET_FROM_EXTRUDER -44  // X offset: -left  +right  [of the nozzle]
+#define Y_PROBE_OFFSET_FROM_EXTRUDER  -2  // Y offset: -front +behind [the nozzle]
+#define Z_PROBE_OFFSET_FROM_EXTRUDER   0  // Z offset: -below +above  [the nozzle]
 
 // Certain types of probes need to stay away from edges
 #define MIN_PROBE_EDGE 20
@@ -1052,11 +1052,11 @@
 
 // The size of the print bed
 #define X_BED_SIZE 231  // put 2mm margin on each side
-#define Y_BED_SIZE 205  // binder clips take up about 15mm each
+#define Y_BED_SIZE 191  // binder clips take up about 22mm each
 
 // Travel limits (mm) after homing, corresponding to endstop positions.
 #define X_MIN_POS -1
-#define Y_MIN_POS -24   // about 9mm to edge of bed, plus 15mm for binder clip
+#define Y_MIN_POS -31   // about 9mm to edge of bed, plus 22mm for binder clip
 #define Z_MIN_POS 0
 #define X_MAX_POS X_BED_SIZE
 #define Y_MAX_POS Y_BED_SIZE
