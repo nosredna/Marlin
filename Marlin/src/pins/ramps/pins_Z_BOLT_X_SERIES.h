@@ -1,6 +1,6 @@
 /**
  * Marlin 3D Printer Firmware
- * Copyright (c) 2019 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+ * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
  * Based on Sprinter and grbl.
  * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
@@ -25,7 +25,7 @@
  *  Z-Bolt X Series board – based on Arduino Mega2560
  */
 
-#if !defined(__AVR_ATmega2560__)
+#ifndef __AVR_ATmega2560__
   #error "Oops! Select 'Arduino/Genuino Mega or Mega 2560' in 'Tools > Board.'"
 #elif HOTENDS > 4 || E_STEPPERS > 4
   #error "Z-Bolt X Series board supports up to 4 hotends / E-steppers."
@@ -193,9 +193,9 @@
   #endif
 #endif
 
-#if HAS_DRIVER(TMC2208)
+#if HAS_TMC_UART
   /**
-   * TMC2208 stepper drivers
+   * TMC220x stepper drivers
    *
    * Hardware serial communication ports.
    * If undefined software serial is used according to the pins below
@@ -284,5 +284,23 @@
   #endif
   #ifndef E4_SERIAL_RX_PIN
     #define E4_SERIAL_RX_PIN -1
+  #endif
+  #ifndef E5_SERIAL_TX_PIN
+    #define E5_SERIAL_TX_PIN -1
+  #endif
+  #ifndef E5_SERIAL_RX_PIN
+    #define E5_SERIAL_RX_PIN -1
+  #endif
+  #ifndef E6_SERIAL_TX_PIN
+    #define E6_SERIAL_TX_PIN -1
+  #endif
+  #ifndef E6_SERIAL_RX_PIN
+    #define E6_SERIAL_RX_PIN -1
+  #endif
+  #ifndef E7_SERIAL_TX_PIN
+    #define E7_SERIAL_TX_PIN -1
+  #endif
+  #ifndef E7_SERIAL_RX_PIN
+    #define E7_SERIAL_RX_PIN -1
   #endif
 #endif

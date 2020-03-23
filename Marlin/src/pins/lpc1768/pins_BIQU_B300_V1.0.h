@@ -1,6 +1,6 @@
 /**
  * Marlin 3D Printer Firmware
- * Copyright (c) 2019 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+ * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
  * Based on Sprinter and grbl.
  * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
@@ -30,13 +30,19 @@
  *
  */
 
-#ifndef TARGET_LPC1768
-  #error "Oops!  Make sure you have the LPC1768 environment selected in your IDE."
+#ifndef MCU_LPC1768
+  #error "Oops! Make sure you have the LPC1768 environment selected in your IDE."
 #endif
 
 #ifndef BOARD_INFO_NAME
   #define BOARD_INFO_NAME "BIQU Thunder B300 V1.0"
 #endif
+
+//
+// EEPROM
+//
+#define FLASH_EEPROM_EMULATION
+//#define SDCARD_EEPROM_EMULATION
 
 //
 // Limit Switches
@@ -98,8 +104,8 @@
 // Temperature Sensors
 //  3.3V max when defined as an analog input
 //
-#define TEMP_0_PIN          1   // A0 (T0)
-#define TEMP_BED_PIN        0   // A1 (T1)
+#define TEMP_0_PIN          P0_24_A1   // A0 (T0)
+#define TEMP_BED_PIN        P0_23_A0   // A1 (T1)
 
 //
 // Heaters / Fans

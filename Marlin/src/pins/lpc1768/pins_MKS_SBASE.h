@@ -1,6 +1,6 @@
 /**
  * Marlin 3D Printer Firmware
- * Copyright (c) 2019 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+ * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
  * Based on Sprinter and grbl.
  * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
@@ -25,7 +25,9 @@
  * MKS SBASE pin assignments
  */
 
-#ifndef TARGET_LPC1768
+#if defined(MKS_HAS_LPC1769) && !defined(MCU_LPC1769)
+  #error "Oops! Make sure you have the LPC1769 environment selected in your IDE."
+#elif !defined(MKS_HAS_LPC1769) && !defined(MCU_LPC1768)
   #error "Oops! Make sure you have the LPC1768 environment selected in your IDE."
 #endif
 
@@ -33,7 +35,15 @@
   #define BOARD_INFO_NAME   "MKS SBASE"
 #endif
 #ifndef BOARD_WEBSITE_URL
-  #define BOARD_WEBSITE_URL "https://github.com/makerbase-mks/MKS-SBASE"
+  #define BOARD_WEBSITE_URL "github.com/makerbase-mks/MKS-SBASE"
+#endif
+
+//
+// EEPROM
+//
+#if NONE(FLASH_EEPROM_EMULATION, SDCARD_EEPROM_EMULATION)
+  #define FLASH_EEPROM_EMULATION
+  //#define SDCARD_EEPROM_EMULATION
 #endif
 
 #define LED_PIN            P1_18   // Used as a status indicator
@@ -90,10 +100,10 @@
 // Temperature Sensors
 // 3.3V max when defined as an analog input
 //
-#define TEMP_BED_PIN        0   // A0 (TH1)
-#define TEMP_0_PIN          1   // A1 (TH2)
-#define TEMP_1_PIN          2   // A2 (TH3)
-#define TEMP_2_PIN          3   // A3 (TH4)
+#define TEMP_BED_PIN        P0_23_A0   // A0 (TH1)
+#define TEMP_0_PIN          P0_24_A1   // A1 (TH2)
+#define TEMP_1_PIN          P0_25_A2   // A2 (TH3)
+#define TEMP_2_PIN          P0_26_A3   // A3 (TH4)
 
 //
 // Heaters / Fans
@@ -320,6 +330,9 @@
   #define Z_SERIAL_RX_PIN  P0_25   // TH3
   #define E0_SERIAL_TX_PIN P4_28   // J8-6
   #define E0_SERIAL_RX_PIN P0_26   // TH4
+
+  // Reduce baud rate to improve software serial reliability
+  #define TMC_BAUD_RATE 19200
 #endif
 
 // UNUSED

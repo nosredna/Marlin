@@ -1,6 +1,6 @@
 /**
  * Marlin 3D Printer Firmware
- * Copyright (c) 2019 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+ * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
  * Based on Sprinter and grbl.
  * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
@@ -26,7 +26,7 @@
 #endif
 
 #define BOARD_INFO_NAME   "FYSETC AIO II"
-#define BOARD_WEBSITE_URL "https://fysetc.com"
+#define BOARD_WEBSITE_URL "fysetc.com"
 
 #define DISABLE_JTAG
 
@@ -35,6 +35,14 @@
 // Ignore temp readings during development.
 //#define BOGUS_TEMPERATURE_GRACE_PERIOD 2000
 
+//
+// Flash EEPROM Emulation
+//
+#define FLASH_EEPROM_EMULATION
+#define EEPROM_PAGE_SIZE     uint16(0x800) // 2KB
+#define EEPROM_START_ADDRESS uint32(0x8000000 + 256 * 1024 - 2 * EEPROM_PAGE_SIZE)
+#undef E2END
+#define E2END                (EEPROM_PAGE_SIZE - 1) // 2KB
 //
 // Limit Switches
 //
@@ -137,7 +145,7 @@
       #define DOGLCD_CS    PB7
     #endif
 
-    //#define LCD_CONTRAST 190
+    //#define LCD_CONTRAST_INIT 190
     //#define LCD_SCREEN_ROT_90
     //#define LCD_SCREEN_ROT_180
     //#define LCD_SCREEN_ROT_270

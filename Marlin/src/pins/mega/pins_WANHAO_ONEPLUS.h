@@ -1,6 +1,6 @@
 /**
  * Marlin 3D Printer Firmware
- * Copyright (c) 2019 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
+ * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
  *
  * Based on Sprinter and grbl.
  * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
@@ -105,9 +105,7 @@
   #define BTN_ENC           5
 
   // This display has adjustable contrast
-  #undef HAS_LCD_CONTRAST
-  #define HAS_LCD_CONTRAST 1
   #define LCD_CONTRAST_MIN       0
   #define LCD_CONTRAST_MAX     255
-  #define DEFAULT_LCD_CONTRAST 255
+  #define LCD_CONTRAST_INIT LCD_CONTRAST_MAX
 #endif
