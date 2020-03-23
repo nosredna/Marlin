@@ -88,9 +88,9 @@
 //
 // MAX6675
 //
-// #define MAX6675_SS_PIN     P1_26
-// #define MAX6675_SCK_PIN    P1_31
-// #define MAX6675_DO_PIN     P1_23
+#define MAX6675_SS_PIN     P1_28
+#define MAX6675_SCK_PIN    P1_31
+#define MAX6675_DO_PIN     P1_23
 
 /**
  * LCD / Controller
@@ -106,7 +106,7 @@
  */
 
 #if HAS_SPI_LCD
-  #define BEEPER_PIN       P1_30
+  // #define BEEPER_PIN       P1_30
   #define BTN_EN1          P3_26
   #define BTN_EN2          P3_25
   #define BTN_ENC          P2_11

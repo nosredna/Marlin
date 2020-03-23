@@ -36,7 +36,8 @@
 #define MAX6675_SEPARATE_SPI (EITHER(HEATER_0_USES_MAX6675, HEATER_1_USES_MAX6675) && PIN_EXISTS(MAX6675_SCK, MAX6675_DO))
 
 #if MAX6675_SEPARATE_SPI
-  #include "../libs/private_spi.h"
+  // #include "../libs/private_spi.h"
+  #include "max6675.h"
 #endif
 
 #if EITHER(BABYSTEPPING, PID_EXTRUSION_SCALING)
@@ -1543,7 +1544,8 @@ void Temperature::updateTemperaturesFromRawValues() {
 #endif
 
 #if MAX6675_SEPARATE_SPI
-  SPIclass<MAX6675_DO_PIN, MOSI_PIN, MAX6675_SCK_PIN> max6675_spi;
+  // SPIclass<MAX6675_DO_PIN, MOSI_PIN, MAX6675_SCK_PIN> max6675_spi;
+  MAX6675 max6675_spi(MAX6675_SCK_PIN, MAX6675_SS_PIN, MAX6675_DO_PIN);
 #endif
 
 // Init fans according to whether they're native PWM or Software PWM
@@ -1650,14 +1652,14 @@ void Temperature::init() {
 
   #if MAX6675_SEPARATE_SPI
 
-    OUT_WRITE(SCK_PIN, LOW);
-    OUT_WRITE(MOSI_PIN, HIGH);
-    SET_INPUT_PULLUP(MISO_PIN);
+    // OUT_WRITE(MAX6675_SCK_PIN, LOW);
+    // OUT_WRITE(MOSI_PIN, HIGH);
+    // SET_INPUT_PULLUP(MAX6675_DO_PIN);
 
     max6675_spi.init();
 
-    OUT_WRITE(SS_PIN, HIGH);
-    OUT_WRITE(MAX6675_SS_PIN, HIGH);
+    // OUT_WRITE(SS_PIN, HIGH);
+    // OUT_WRITE(MAX6675_SS_PIN, HIGH);
 
   #endif
 
@@ -2096,25 +2098,15 @@ void Temperature::disable_all_heaters() {
       #define SET_OUTPUT_MAX6675() SET_OUTPUT(MAX6675_SS_PIN)
     #endif
 
-    SET_OUTPUT_MAX6675();
-    WRITE_MAX6675(LOW);  // enable TT_MAX6675
+    // SET_OUTPUT_MAX6675();
+    // WRITE_MAX6675(LOW);  // enable TT_MAX6675
 
-    DELAY_NS(100);       // Ensure 100ns delay
+    // DELAY_NS(100);       // Ensure 100ns delay
 
     // Read a big-endian temperature value
-    max6675_temp = 0;
-    for (uint8_t i = sizeof(max6675_temp); i--;) {
-      max6675_temp |= (
-        #if MAX6675_SEPARATE_SPI
-          max6675_spi.receive()
-        #else
-          spiRec()
-        #endif
-      );
-      if (i > 0) max6675_temp <<= 8; // shift left if not the last byte
-    }
+    max6675_temp = max6675_spi.read16();
 
-    WRITE_MAX6675(HIGH); // disable TT_MAX6675
+    // WRITE_MAX6675(HIGH); // disable TT_MAX6675
 
     if (max6675_temp & MAX6675_ERROR_MASK) {
       SERIAL_ERROR_START();
