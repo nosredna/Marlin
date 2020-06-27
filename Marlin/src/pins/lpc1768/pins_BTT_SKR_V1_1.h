@@ -71,9 +71,11 @@
 //
 // MAX6675
 //
-#define MAX6675_SS_PIN     P1_28
-#define MAX6675_SCK_PIN    P1_31
-#define MAX6675_DO_PIN     P1_23
+// #define MAX6675_SS_PIN     P1_28
+// #define MAX6675_SCK_PIN    P1_31
+// #define MAX6675_DO_PIN     P1_23
+
+#define FIL_RUNOUT_PIN     P1_28
 
 /**
  * LCD / Controller

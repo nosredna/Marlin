@@ -2,7 +2,7 @@
 // www.ladyada.net/learn/sensors/thermocouple
 
 #include "../HAL/shared/Marduino.h"
-#include "../Marlin.h"
+#include "../MarlinCore.h"
 
 #include <stdlib.h>
 #include "max6675.h"
