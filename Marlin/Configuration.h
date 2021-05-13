@@ -1102,12 +1102,12 @@
 // @section machine
 
 // The size of the print bed
-#define X_BED_SIZE 225  // 7mm left, 5mm right margins
-#define Y_BED_SIZE 217  // clips take up about 7mm on each side plus 2mm margin
+#define X_BED_SIZE 226  // 7mm nozzle offset + 2mm margin
+#define Y_BED_SIZE 231  // 2mm margins
 
 // Travel limits (mm) after homing, corresponding to endstop positions.
 #define X_MIN_POS 0
-#define Y_MIN_POS -27 // edge of bed offset + glass clips
+#define Y_MIN_POS -20 // edge of bed offset + glass clips
 #define Z_MIN_POS 0
 #define X_MAX_POS X_BED_SIZE
 #define Y_MAX_POS Y_BED_SIZE
